@@ -1,0 +1,177 @@
+<title>投稿ストック</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<style>
+/* Layout: 日付ごとの縦並びカード。各日は3枠（08:00 / 12:00 / 15:00）。選んだ案だけが大きく残る。 */
+:root{
+  --bg:#f2f4f7; --card:#ffffff; --ink:#18212b; --mut:#667385; --line:#dde2e9;
+  --acc:#e0601c; --acc-ink:#ffffff; --blue:#2c5a8a; --ok:#2f7d4f; --soft:#fbe9dd;
+  --font:"Noto Sans JP","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12171d; --card:#1b222b; --ink:#e9edf2; --mut:#93a0b0; --line:#2b3440;
+  --acc:#f07a38; --acc-ink:#1a1008; --blue:#7fb0e0; --ok:#6fcf93; --soft:#3a2518; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12171d; --card:#1b222b; --ink:#e9edf2; --mut:#93a0b0; --line:#2b3440;
+  --acc:#f07a38; --acc-ink:#1a1008; --blue:#7fb0e0; --ok:#6fcf93; --soft:#3a2518; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font:15px/1.65 var(--font);
+  padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+#app{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1{font-size:21px;margin:0;font-weight:700}
+.sub{color:var(--mut);font-size:13px;margin:2px 0 0}
+.sum{display:flex;gap:10px;flex-wrap:wrap}
+.pill{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:13px}
+.pill b{color:var(--acc)}
+.day{display:flex;flex-direction:column;gap:10px}
+.day>h2{font-size:15px;margin:6px 0 0;font-weight:700}
+.slot{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.slot-h{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.time{font-weight:700;font-variant-numeric:tabular-nums}
+.lbl{color:var(--mut);font-size:13px}
+.tag{margin-left:auto;font-size:12px;border-radius:999px;padding:1px 10px;background:var(--line);color:var(--mut)}
+.tag.on{background:var(--soft);color:var(--acc)}.tag.done{background:var(--ok);color:var(--acc-ink)}
+.cand{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:9px 10px}
+.cand .id{color:var(--mut);font-size:12px;min-width:22px;padding-top:2px}
+.cand p{margin:0;flex:1;min-width:0;overflow-wrap:anywhere}
+button,.btn{font:inherit;font-size:14px;border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:7px 12px;cursor:pointer;text-decoration:none;display:inline-block;text-align:center}
+button:focus-visible,.btn:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.pri{background:var(--acc);border-color:var(--acc);color:var(--acc-ink);font-weight:500}
+.pick p.text{margin:0;font-size:16px;line-height:1.7;overflow-wrap:anywhere}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.row>*{flex:0 1 auto}
+.steps{display:flex;gap:6px;flex-wrap:wrap}
+.step{font-size:13px;padding:4px 11px;border-radius:999px}
+.step.cur{background:var(--blue);border-color:var(--blue);color:var(--acc-ink)}
+.perf{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.perf label{font-size:12px;color:var(--mut);display:flex;flex-direction:column;gap:2px}
+input,textarea{font:inherit;font-size:14px;border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--bg);color:var(--ink);width:100%;box-sizing:border-box;min-width:0}
+.hint{font-size:12px;color:var(--mut)}
+.empty{background:var(--card);border:1px dashed var(--line);border-radius:12px;padding:22px 16px;color:var(--mut)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:999px;font-size:14px}
+</style>
+
+<div id="app">
+  <header>
+    <h1>投稿ストック</h1>
+    <p class="sub">選ぶ → コピー → Xで開いて予約。投稿後は反応を記録します。</p>
+  </header>
+  <div id="sum" class="sum"></div>
+  <div id="list"></div>
+</div>
+<div id="toast" class="toast" hidden></div>
+
+<script>
+const SLOTS=[
+ {key:'aruaru',time:'08:00',label:'製造業あるある',img:true},
+ {key:'affiliate',time:'12:00',label:'アフィリエイトPR',img:false},
+ {key:'question',time:'15:00',label:'真面目な問いかけ',img:true}];
+const FLOW_IMG=[['picked','選択済み'],['ready','画像OK'],['scheduled','予約済み'],['posted','投稿済み']];
+const FLOW_TXT=[['picked','選択済み'],['scheduled','予約済み'],['posted','投稿済み']];
+const MAXLEN=140;
+let col=null, docs=[], loaded=false;
+
+const $=s=>document.querySelector(s);
+function h(tag,attrs={},...kids){
+  const e=document.createElement(tag);
+  for(const [k,v] of Object.entries(attrs)){
+    if(k==='class')e.className=v; else if(k==='on')for(const [ev,fn] of Object.entries(v))e.addEventListener(ev,fn);
+    else if(v!==false&&v!=null)e.setAttribute(k,v);
+  }
+  for(const k of kids.flat())if(k!=null)e.append(k.nodeType?k:document.createTextNode(k));
+  return e;
+}
+let tt;function toast(m){const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,1800)}
+async function copy(text,msg){
+  try{await navigator.clipboard.writeText(text);toast(msg)}
+  catch(e){const ta=h('textarea',{readonly:'',rows:4});ta.value=text;document.body.append(ta);ta.select();toast('選択しました。コピーしてください');setTimeout(()=>ta.remove(),8000)}
+}
+function imagePrompt(text){
+  return '添付した画像のキャラクター（オレンジ色のふんわりした髪、にこやかな笑顔の青年、青い作業着）と同一人物を主人公にしたイラストを描いてください。\n- フラットでやわらかい絵柄、細めの線、正方形（1:1）\n- 舞台は製造業の現場\n- 画像の中に文字や数字は入れない\n- 安全に関わる場面では保護具（保護メガネ・ヘルメット）を着用させる\n\n場面: 次のX投稿の内容を、見た人が思わずクスッと・ハッとする1場面で表現してください。\n「'+text+'」';
+}
+function dayLabel(d){const [y,m,dd]=d.split('-').map(Number);const w='日月火水木金土'[new Date(y,m-1,dd).getDay()];return m+'/'+dd+'（'+w+'）'}
+const ref=d=>col.doc(d.id);
+async function setStatus(d,status){try{await ref(d).update({status})}catch(e){toast('保存できませんでした')}}
+async function pick(d){
+  try{
+    for(const o of docs){
+      if(o.date!==d.date||o.slot!==d.slot)continue;
+      if(o.id===d.id){if(o.status==='candidate')await ref(o).update({status:'picked'})}
+      else if(o.status!=='candidate')await ref(o).update({status:'candidate'});
+    }
+  }catch(e){toast('保存できませんでした')}
+}
+async function savePerf(d,field,val){
+  const n=val===''?null:Number(val);
+  try{await ref(d).update({[field]:field==='note'?val:(Number.isFinite(n)?n:null)});toast('記録しました')}catch(e){toast('保存できませんでした')}
+}
+
+function slotView(day,slot,items){
+  const picked=items.find(i=>i.status&&i.status!=='candidate');
+  const head=(tag)=>h('div',{class:'slot-h'},h('span',{class:'time'},slot.time),h('span',{class:'lbl'},slot.label),tag);
+  if(!items.length)return h('section',{class:'slot'},head(h('span',{class:'tag'},'案なし')),h('p',{class:'hint',style:'margin:0'},slot.key==='affiliate'?'商品リストが届き次第、Claudeが案を作ります。':'Claudeが次の朝に案を作ります。'));
+  if(!picked){
+    return h('section',{class:'slot'},head(h('span',{class:'tag on'},'選んでください')),
+      items.map(c=>h('div',{class:'cand'},h('span',{class:'id'},c.cid),h('p',{},c.text),h('button',{class:'pri',on:{click:()=>pick(c)}},'これ'))));
+  }
+  const flow=slot.img?FLOW_IMG:FLOW_TXT;
+  const text=picked.text, over=[...text].length>MAXLEN;
+  const posted=picked.status==='posted';
+  const tag=h('span',{class:'tag '+(posted?'done':'on')},(flow.find(f=>f[0]===picked.status)||[0,'選択済み'])[1]);
+  const children=[head(tag),
+    h('div',{class:'pick'},h('p',{class:'text'},text),over?h('p',{class:'hint'},'文字数が上限（全角140字）を超えています'):null),
+    h('div',{class:'row'},
+      h('button',{class:'pri',on:{click:()=>copy(text,'本文をコピーしました')}},'本文をコピー'),
+      slot.img?h('button',{on:{click:()=>copy(imagePrompt(text),'画像プロンプトをコピーしました')}},'画像プロンプト'):null,
+      h('a',{class:'btn',href:'https://x.com/intent/post?text='+encodeURIComponent(text),target:'_blank',rel:'noopener'},'Xで投稿画面を開く')),
+    slot.img?h('p',{class:'hint',style:'margin:0'},'画像プロンプトをGeminiアプリ等に、assets/icon.png のアイコンと一緒に貼ってください。作った画像は、X側で添付します。'):null,
+    h('div',{class:'steps'},flow.map(([k,l])=>h('button',{class:'step'+(k===picked.status?' cur':''),on:{click:()=>setStatus(picked,k)}},l)),
+      h('button',{class:'step',on:{click:()=>setStatus(picked,'candidate')}},'選び直す'))];
+  if(posted){
+    const f=(k,l)=>h('label',{},l,h('input',{type:'number',inputmode:'numeric',min:'0',id:'f-'+picked.id+'-'+k,value:picked[k]??'',on:{change:e=>savePerf(picked,k,e.target.value)}}));
+    children.push(h('div',{class:'perf'},f('imps','表示'),f('likes','いいね'),f('rp','リポスト')),
+      h('label',{class:'hint'},'メモ（伸びた／外れた理由）',h('textarea',{rows:2,id:'n-'+picked.id,on:{change:e=>savePerf(picked,'note',e.target.value)}},picked.note||'')));
+  }
+  return h('section',{class:'slot'},children);
+}
+
+function render(){
+  const sum=$('#sum'),list=$('#list');
+  sum.replaceChildren();list.replaceChildren();
+  if(!col){list.append(h('div',{class:'empty'},'保存機能を利用できません。ページを開き直すか、アカウントでサインインしているか確認してください。'));return}
+  if(!loaded){list.append(h('div',{class:'empty'},'読み込み中です…'));return}
+  if(!docs.length){list.append(h('div',{class:'empty'},'まだ投稿案がありません。Claudeが毎朝、3枠×5案をここに追加します。'));return}
+  const dates=[...new Set(docs.map(d=>d.date))].sort();
+  let full=0,picks=0,slots=0;
+  for(const date of dates){
+    let ok=true;
+    for(const s of SLOTS){
+      const items=docs.filter(d=>d.date===date&&d.slot===s.key);
+      if(!items.length){ok=false;continue}
+      slots++;
+      if(items.some(i=>i.status&&i.status!=='candidate'))picks++;else ok=false;
+    }
+    if(ok)full++;
+  }
+  sum.append(h('span',{class:'pill'},'3枠そろった日 ',h('b',{},full),' 日分'),h('span',{class:'pill'},'選択済み ',h('b',{},picks),' / ',slots,' 枠'));
+  for(const date of dates){
+    const box=h('div',{class:'day'},h('h2',{},dayLabel(date)));
+    for(const s of SLOTS){
+      const items=docs.filter(d=>d.date===date&&d.slot===s.key).sort((a,b)=>a.cid.localeCompare(b.cid,'ja',{numeric:true}));
+      box.append(slotView(date,s,items));
+    }
+    list.append(box);
+  }
+}
+
+render();
+(async()=>{
+  const timer=setTimeout(()=>{if(!loaded)toast('データに接続できていません。しばらくお待ちください')},10000);
+  try{
+    const db=await window.claude?.use('db');
+    if(!db){col=null;render();return}
+    col=db.collection('posts');
+    col.onSnapshot(s=>{loaded=true;clearTimeout(timer);docs=s.docs.map(x=>({id:x.id,...x.data()}));render()},
+      e=>{loaded=true;clearTimeout(timer);toast('読み込みエラー: '+e.code);render()});
+  }catch(e){col=null;render()}
+})();
+</script>

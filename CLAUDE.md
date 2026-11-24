@@ -39,6 +39,13 @@
 4. ストック確認: `queue/selected/` に今日から数えて3日分なければ、足りない日の候補を3枠×5案で作る
 5. 候補ができたら `python3 scripts/build_select_page.py` で選択ページを更新し、ユーザーに知らせる
 
+## 投稿ストックのページ（Artifact）
+URL: https://claude.ai/artifact/XbVtetUTEhxY5rAvVSdXeS （ソース: `app/index.html`）
+- ユーザーはここで案を選び、コピーし、Xの投稿画面を開き、投稿後に反応（表示・いいね・RP・メモ）を記録する
+- データはArtifactのdb（コレクション `posts`、doc id は `日付_スロット_案ID`）。項目: date, slot(aruaru/affiliate/question), cid, text, status(candidate/picked/ready/scheduled/posted), imps, likes, rp, note
+- 毎朝: ArtifactData の query で `posts` を読み、status が picked 以降の傾向と posted の反応を `profile.md` と `analytics/log.md` に反映する
+- 新しい案は `queue/candidates/` に保存すると同時に、ArtifactData の batch で `posts` に status=candidate で追加する
+
 ## 学習の更新（会話のたびに）
 - ユーザーが新しい経験・考えを話したら `episodes.md` か `profile.md` に追記してコミット・pushする
 - 案を選んだ/選ばなかった傾向は `profile.md` の「選択の傾向ログ」に残す
