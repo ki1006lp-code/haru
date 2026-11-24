@@ -37,6 +37,7 @@ button,.btn{font:inherit;font-size:14px;border-radius:9px;border:1px solid var(-
 button:focus-visible,.btn:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
 .pri{background:var(--acc);border-color:var(--acc);color:var(--acc-ink);font-weight:500}
 .pick p.text{margin:0;font-size:16px;line-height:1.7;overflow-wrap:anywhere;white-space:pre-wrap}
+.rep{margin-top:10px;padding-left:12px;border-left:2px solid var(--line);display:flex;flex-direction:column;gap:6px;align-items:flex-start}
 .aff{display:flex;flex-direction:column;gap:6px}
 .aff label{display:flex;flex-direction:column;gap:4px}
 .row{display:flex;gap:8px;flex-wrap:wrap}
@@ -120,16 +121,18 @@ function slotView(day,slot,items){
   if(!items.length)return h('section',{class:'slot'},head(h('span',{class:'tag'},'案なし')),h('p',{class:'hint',style:'margin:0'},slot.key==='affiliate'?'商品リストが届き次第、Claudeが案を作ります。':'Claudeが次の朝に案を作ります。'));
   if(!picked){
     return h('section',{class:'slot'},head(h('span',{class:'tag on'},'選んでください')),
-      items.map(c=>h('div',{class:'cand'},h('span',{class:'id'},c.cid),h('p',{},c.text),h('button',{class:'pri',on:{click:()=>pick(c)}},'これ'))));
+      items.map(c=>h('div',{class:'cand'},h('span',{class:'id'},c.cid),h('p',{},c.text,(c.replies||[]).map(r=>h('span',{class:'hint',style:'display:block'},'↳ '+r))),h('button',{class:'pri',on:{click:()=>pick(c)}},'これ'))));
   }
   const flow=slot.img?FLOW_IMG:FLOW_TXT;
   const base=picked.text;
   const link=(slot.key==='affiliate'&&picked.url&&tpl)?tpl.split('{URL}').join(encodeURIComponent(picked.url)):'';
-  const text=link?base+'\n'+link:base, over=[...base].length>MAXLEN;
+  const reps=[...(picked.replies||[])];
+  if(link){if(reps.length)reps[reps.length-1]+='\n'+link;else reps.push(link)}
+  const text=base, over=[...base].length>MAXLEN||(picked.replies||[]).some(r=>[...r].length>MAXLEN);
   const posted=picked.status==='posted';
   const tag=h('span',{class:'tag '+(posted?'done':'on')},(flow.find(f=>f[0]===picked.status)||[0,'選択済み'])[1]);
   const children=[head(tag),
-    h('div',{class:'pick'},h('p',{class:'text'},text),over?h('p',{class:'hint'},'文字数が上限（全角140字）を超えています'):null),
+    h('div',{class:'pick'},h('p',{class:'text'},text),reps.map((r,i)=>h('div',{class:'rep'},h('p',{class:'text'},r),h('button',{on:{click:()=>copy(r,'リプライ'+(i+1)+'をコピーしました')}},'リプライ'+(i+1)+'をコピー'))),over?h('p',{class:'hint'},'文字数が上限（全角140字）を超えています'):null),
     slot.key==='affiliate'?h('div',{class:'aff'},
       h('label',{class:'hint'},'楽天の商品ページURL（貼ると、アフィリエイトリンクを自動で作ります）',h('input',{type:'url',id:'u-'+picked.id,value:picked.url||'',placeholder:'https://item.rakuten.co.jp/...',on:{change:e=>saveUrl(picked,e.target.value.trim())}})),
       !tpl?h('p',{class:'hint'},'リンクのひな形が未設定です。ページ下の「楽天リンク設定」を入力してください。'):null,
@@ -140,6 +143,7 @@ function slotView(day,slot,items){
       slot.img?h('button',{on:{click:()=>copy(imagePrompt(base),'画像プロンプトをコピーしました')}},'プロンプトのみコピー'):null,
       h('a',{class:'btn',href:'https://x.com/intent/post?text='+encodeURIComponent(text),target:'_blank',rel:'noopener'},'Xで投稿画面を開く')),
     slot.img?h('p',{class:'hint',style:'margin:0'},'ChatGPTが開いたら、アイコン画像を添付して送信します。3枚の中から選んで写真に保存し、Xの投稿画面で添付してください。'):null,
+    reps.length?h('p',{class:'hint',style:'margin:0'},'先にメイン投稿を出し、その投稿に返信する形で、リプライを順番に貼ってください。'):null,
     h('div',{class:'steps'},flow.map(([k,l])=>h('button',{class:'step'+(k===picked.status?' cur':''),on:{click:()=>setStatus(picked,k)}},l)),
       h('button',{class:'step',on:{click:()=>setStatus(picked,'candidate')}},'選び直す'))];
   if(posted){
