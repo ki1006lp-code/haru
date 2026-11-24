@@ -36,5 +36,8 @@
 ## 選択後の流れ
 ユーザーが「2026-11-25 aruaru=A3 affiliate=F2 question=Q1」の形式で返す。
 1. `queue/selected/日付.json` に確定した文を保存する
-2. あるある・問いかけは `scripts/generate_image.py --text 本文 --out queue/images/日付_ID.png` で画像を作る
-3. 完成した「文＋画像」を、予約投稿用にまとめて提示する
+2. 画像は手動運用（Geminiの画像モデルは無料枠が使えないため）。あるある・問いかけの各案について
+   `python3 scripts/make_image_prompt.py "本文"` で出したプロンプトを提示する。
+   ユーザーが `assets/icon.png` を添えてGeminiアプリ等で作る。
+   （課金を有効にした場合は `scripts/generate_image.py --text 本文 --out queue/images/日付_ID.png` で自動化できる）
+3. 完成した「文」を、Xの予約投稿用に日付・時刻つきでまとめて提示する
