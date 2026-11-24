@@ -1,0 +1,13 @@
+{
+  "_comment": "楽天アフィリエイトの商品リスト。affiliate_url は楽天アフィリエイトで発行したリンクを入れる。",
+  "products": [
+    {
+      "id": "sample-1",
+      "name": "（商品名）",
+      "affiliate_url": "https://hb.afl.rakuten.co.jp/...",
+      "appeal": "（訴求ポイント。現場で役立つ理由を1〜2行）",
+      "target": "（想定する読者。例: 工場勤務・冬の現場仕事）",
+      "season": "（任意。例: 冬）"
+    }
+  ]
+}
