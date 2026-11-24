@@ -36,7 +36,9 @@ h1{font-size:21px;margin:0;font-weight:700}
 button,.btn{font:inherit;font-size:14px;border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:7px 12px;cursor:pointer;text-decoration:none;display:inline-block;text-align:center}
 button:focus-visible,.btn:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
 .pri{background:var(--acc);border-color:var(--acc);color:var(--acc-ink);font-weight:500}
-.pick p.text{margin:0;font-size:16px;line-height:1.7;overflow-wrap:anywhere}
+.pick p.text{margin:0;font-size:16px;line-height:1.7;overflow-wrap:anywhere;white-space:pre-wrap}
+.aff{display:flex;flex-direction:column;gap:6px}
+.aff label{display:flex;flex-direction:column;gap:4px}
 .row{display:flex;gap:8px;flex-wrap:wrap}
 .row>*{flex:0 1 auto}
 .steps{display:flex;gap:6px;flex-wrap:wrap}
@@ -57,6 +59,12 @@ input,textarea{font:inherit;font-size:14px;border:1px solid var(--line);border-r
   </header>
   <div id="sum" class="sum"></div>
   <div id="list"></div>
+  <section class="slot" id="set">
+    <h2 style="font-size:15px;margin:0">楽天リンク設定</h2>
+    <p class="hint" style="margin:0">楽天アフィリエイトで作った自分のリンクを1つ貼り、その中の商品URL部分を {URL} に置き換えて保存します。以降は商品ページのURLを貼るだけでリンクが作れます。</p>
+    <input id="tpl" type="text" placeholder="例: https://hb.afl.rakuten.co.jp/hgc/（自分のID）/?pc={URL}&amp;m={URL}">
+    <div class="row"><button id="tplsave" class="pri">保存</button></div>
+  </section>
 </div>
 <div id="toast" class="toast" hidden></div>
 
@@ -68,7 +76,7 @@ const SLOTS=[
 const FLOW_IMG=[['picked','選択済み'],['ready','画像OK'],['scheduled','予約済み'],['posted','投稿済み']];
 const FLOW_TXT=[['picked','選択済み'],['scheduled','予約済み'],['posted','投稿済み']];
 const MAXLEN=140;
-let col=null, docs=[], loaded=false;
+let col=null, dbh=null, tpl='', docs=[], loaded=false;
 
 const $=s=>document.querySelector(s);
 function h(tag,attrs={},...kids){
@@ -86,7 +94,7 @@ async function copy(text,msg){
   catch(e){const ta=h('textarea',{readonly:'',rows:4});ta.value=text;document.body.append(ta);ta.select();toast('選択しました。コピーしてください');setTimeout(()=>ta.remove(),8000)}
 }
 function imagePrompt(text){
-  return '添付した画像のキャラクター（オレンジ色のふんわりした髪、にこやかな笑顔の青年、青い作業着）と同一人物を主人公にしたイラストを描いてください。\n- フラットでやわらかい絵柄、細めの線、正方形（1:1）\n- 舞台は製造業の現場\n- 画像の中に文字や数字は入れない\n- 安全に関わる場面では保護具（保護メガネ・ヘルメット）を着用させる\n\n場面: 次のX投稿の内容を、見た人が思わずクスッと・ハッとする1場面で表現してください。\n「'+text+'」';
+  return '添付した画像のキャラクター（オレンジ色のふんわりした髪、にこやかな笑顔の青年、青い作業着）と同一人物を主人公にしたイラストを描いてください。\n- フラットでやわらかい絵柄、細めの線、正方形（1:1）\n- 舞台は製造業の現場\n- 画像の中に文字や数字は入れない\n- 安全に関わる場面では保護具（保護メガネ・ヘルメット）を着用させる\n\n場面: 次のX投稿の内容を、見た人が思わずクスッと・ハッとする1場面で表現してください。\n構図・ポーズ・背景を変えた3パターンを、別々の画像として3枚生成してください。\n「'+text+'」';
 }
 function dayLabel(d){const [y,m,dd]=d.split('-').map(Number);const w='日月火水木金土'[new Date(y,m-1,dd).getDay()];return m+'/'+dd+'（'+w+'）'}
 const ref=d=>col.doc(d.id);
@@ -105,6 +113,7 @@ async function savePerf(d,field,val){
   try{await ref(d).update({[field]:field==='note'?val:(Number.isFinite(n)?n:null)});toast('記録しました')}catch(e){toast('保存できませんでした')}
 }
 
+async function saveUrl(d,url){try{await ref(d).update({url});toast('保存しました')}catch(e){toast('保存できませんでした')}}
 function slotView(day,slot,items){
   const picked=items.find(i=>i.status&&i.status!=='candidate');
   const head=(tag)=>h('div',{class:'slot-h'},h('span',{class:'time'},slot.time),h('span',{class:'lbl'},slot.label),tag);
@@ -114,16 +123,23 @@ function slotView(day,slot,items){
       items.map(c=>h('div',{class:'cand'},h('span',{class:'id'},c.cid),h('p',{},c.text),h('button',{class:'pri',on:{click:()=>pick(c)}},'これ'))));
   }
   const flow=slot.img?FLOW_IMG:FLOW_TXT;
-  const text=picked.text, over=[...text].length>MAXLEN;
+  const base=picked.text;
+  const link=(slot.key==='affiliate'&&picked.url&&tpl)?tpl.split('{URL}').join(encodeURIComponent(picked.url)):'';
+  const text=link?base+'\n'+link:base, over=[...base].length>MAXLEN;
   const posted=picked.status==='posted';
   const tag=h('span',{class:'tag '+(posted?'done':'on')},(flow.find(f=>f[0]===picked.status)||[0,'選択済み'])[1]);
   const children=[head(tag),
     h('div',{class:'pick'},h('p',{class:'text'},text),over?h('p',{class:'hint'},'文字数が上限（全角140字）を超えています'):null),
+    slot.key==='affiliate'?h('div',{class:'aff'},
+      h('label',{class:'hint'},'楽天の商品ページURL（貼ると、アフィリエイトリンクを自動で作ります）',h('input',{type:'url',id:'u-'+picked.id,value:picked.url||'',placeholder:'https://item.rakuten.co.jp/...',on:{change:e=>saveUrl(picked,e.target.value.trim())}})),
+      !tpl?h('p',{class:'hint'},'リンクのひな形が未設定です。ページ下の「楽天リンク設定」を入力してください。'):null,
+      !base.includes('#PR')?h('p',{class:'hint'},'本文に「#PR」がありません。付けてから投稿してください。'):null):null,
     h('div',{class:'row'},
       h('button',{class:'pri',on:{click:()=>copy(text,'本文をコピーしました')}},'本文をコピー'),
-      slot.img?h('button',{on:{click:()=>copy(imagePrompt(text),'画像プロンプトをコピーしました')}},'画像プロンプト'):null,
+      slot.img?h('a',{class:'btn',href:'https://chatgpt.com/?q='+encodeURIComponent(imagePrompt(base)),target:'_blank',rel:'noopener'},'ChatGPTで画像3案'):null,
+      slot.img?h('button',{on:{click:()=>copy(imagePrompt(base),'画像プロンプトをコピーしました')}},'プロンプトのみコピー'):null,
       h('a',{class:'btn',href:'https://x.com/intent/post?text='+encodeURIComponent(text),target:'_blank',rel:'noopener'},'Xで投稿画面を開く')),
-    slot.img?h('p',{class:'hint',style:'margin:0'},'画像プロンプトをGeminiアプリ等に、assets/icon.png のアイコンと一緒に貼ってください。作った画像は、X側で添付します。'):null,
+    slot.img?h('p',{class:'hint',style:'margin:0'},'ChatGPTが開いたら、アイコン画像を添付して送信します。3枚の中から選んで写真に保存し、Xの投稿画面で添付してください。'):null,
     h('div',{class:'steps'},flow.map(([k,l])=>h('button',{class:'step'+(k===picked.status?' cur':''),on:{click:()=>setStatus(picked,k)}},l)),
       h('button',{class:'step',on:{click:()=>setStatus(picked,'candidate')}},'選び直す'))];
   if(posted){
@@ -163,13 +179,20 @@ function render(){
   }
 }
 
+$('#tplsave').addEventListener('click',async()=>{
+  const v=$('#tpl').value.trim();
+  if(!dbh)return toast('保存機能を利用できません');
+  if(v&&!v.includes('{URL}'))return toast('{URL} を含めてください');
+  try{await dbh.doc('settings/affiliate').set({template:v});toast('保存しました')}catch(e){toast('保存できませんでした')}
+});
 render();
 (async()=>{
   const timer=setTimeout(()=>{if(!loaded)toast('データに接続できていません。しばらくお待ちください')},10000);
   try{
     const db=await window.claude?.use('db');
     if(!db){col=null;render();return}
-    col=db.collection('posts');
+    dbh=db;col=db.collection('posts');
+    db.doc('settings/affiliate').onSnapshot(s=>{tpl=(s.exists&&s.data().template)||'';const i=$('#tpl');if(i&&document.activeElement!==i)i.value=tpl;render()},()=>{});
     col.onSnapshot(s=>{loaded=true;clearTimeout(timer);docs=s.docs.map(x=>({id:x.id,...x.data()}));render()},
       e=>{loaded=true;clearTimeout(timer);toast('読み込みエラー: '+e.code);render()});
   }catch(e){col=null;render()}

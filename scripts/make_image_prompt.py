@@ -17,4 +17,4 @@ STYLE = (
 
 if len(sys.argv) < 2:
     sys.exit('使い方: make_image_prompt.py "投稿文"')
-print(f"{STYLE}\n\n場面: 次のX投稿の内容を、見た人が思わずクスッと・ハッとする1場面で表現してください。\n「{sys.argv[1]}」")
+print(f"{STYLE}\n\n場面: 次のX投稿の内容を、見た人が思わずクスッと・ハッとする1場面で表現してください。\n構図・ポーズ・背景を変えた3パターンを、別々の画像として3枚生成してください。\n「{sys.argv[1]}」")
