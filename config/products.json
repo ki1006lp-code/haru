@@ -1,13 +1,45 @@
 {
-  "_comment": "楽天アフィリエイトの商品リスト。affiliate_url は楽天アフィリエイトで発行したリンクを入れる。",
+  "_comment": "楽天アフィリエイト用の商品リスト。product_url は楽天の商品ページ。アフィリエイトリンクは投稿ストックのページで作る。評価・件数は2026-11-24時点の検索結果の表示で、最新ではない可能性がある。販売者の「楽天1位」などの表記は第三者の順位ではないため、投稿に使わない。",
   "products": [
     {
-      "id": "sample-1",
-      "name": "（商品名）",
-      "affiliate_url": "https://hb.afl.rakuten.co.jp/...",
-      "appeal": "（訴求ポイント。現場で役立つ理由を1〜2行）",
-      "target": "（想定する読者。例: 工場勤務・冬の現場仕事）",
-      "season": "（任意。例: 冬）"
+      "id": "otafuku-h4v",
+      "name": "おたふく手袋 蓄熱インナーグローブ H4V",
+      "product_url": "https://item.rakuten.co.jp/aruge/h4v/",
+      "rating_snapshot": "4.10 (21件)",
+      "appeal": "薄手で重ね着しやすい蓄熱タイプのインナー手袋。タッチパネルは非対応",
+      "target": "冬の屋外・倉庫・工場で手先が冷える人",
+      "caution": "保温はアウター手袋との組み合わせに左右される、という声あり",
+      "backup": "https://item.rakuten.co.jp/mamorukun-ra/w-336-1023/ (JW-143, 4.67 / 9件)"
+    },
+    {
+      "id": "meisei-warmer-6800",
+      "name": "充電式カイロ ハンドウォーマー 6800mAh 2in1（明誠ショップ）",
+      "product_url": "https://item.rakuten.co.jp/meisei/901/",
+      "rating_snapshot": "4.45 (266件)",
+      "appeal": "繰り返し使える充電式。3段階温度調節、Type-C充電、モバイルバッテリー兼用",
+      "target": "朝イチの冷え、休憩時間に手を温めたい人",
+      "caution": "バッテリーの持ちが物足りないというレビューあり。作業中の持ち込みは職場のルールに従う",
+      "backup": "https://item.rakuten.co.jp/hongge/hglt-nsb/ (分離式, 4.71。「楽天1位」は販売者表記)"
+    },
+    {
+      "id": "otafuku-jw124",
+      "name": "おたふく手袋 JW-124 発熱 防風 ネックウォーマー",
+      "product_url": "https://item.rakuten.co.jp/yamashita-yamasen/jw-124/",
+      "rating_snapshot": "4.20 (35件)",
+      "appeal": "現場・作業着向けと明記。防風、ワンタッチでサイズ調整",
+      "target": "屋外作業・冷える工場の首元対策",
+      "caution": "調整紐を気にする声あり。回転機械の近くでは巻き込みに注意し、職場のルールに従う",
+      "backup": "https://item.rakuten.co.jp/aruge/k1a/ (ロング丈リバーシブル, 4.42 / 175件)"
+    },
+    {
+      "id": "musclesuit-proinsole",
+      "name": "マッスルスーツ PRO INSOLE（安全靴・作業靴向けインソール）",
+      "product_url": "https://item.rakuten.co.jp/musclesuit/proinsole/",
+      "rating_snapshot": "未確認（検索結果に評価の表示なし）",
+      "appeal": "安全靴・作業靴での長時間作業を想定した設計とされる",
+      "target": "立ち仕事・歩き回る仕事で足が疲れる人",
+      "caution": "購入前にレビュー件数と評価を確認する。効果の断定はしない（販売者の説明に基づく）",
+      "backup": "https://item.rakuten.co.jp/nis-shop/bmz_ashitoreworkairbooster01/ (BMZ アシトレ WORK Air BOOSTER)"
     }
   ]
 }
