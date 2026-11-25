@@ -152,7 +152,7 @@ function slotView(day,slot,items){
       !base.includes('#PR')?h('p',{class:'hint'},'本文に「#PR」がありません。付けてから投稿してください。'):null):null,
     h('div',{class:'row'},
       h('button',{class:'pri',on:{click:()=>copy(text,'本文をコピーしました')}},'本文をコピー'),
-      slot.img?h('a',{class:'btn',href:'https://chatgpt.com/?q='+encodeURIComponent(imagePrompt(base)),target:'_blank',rel:'noopener'},'ChatGPTで画像3案'):null,
+      slot.img?h('a',{class:'btn',href:'https://chatgpt.com/?q='+encodeURIComponent(imagePrompt(base)),target:'_blank',rel:'noopener',on:{click:()=>copy(imagePrompt(base),'プロンプトをコピーした。入ってなければ貼り付けてね')}},'ChatGPTで画像3案'):null,
       h('a',{class:'btn',href:'https://x.com/intent/post?text='+encodeURIComponent(text),target:'_blank',rel:'noopener'},'Xで投稿画面を開く')),
     h('div',{class:'steps'},
       posted?delBtn('削除','g-'+picked.date+slot.key,()=>delGroup(picked.date,slot.key)):h('button',{class:'step',on:{click:()=>setStatus(picked,'posted')}},'投稿済み'),
