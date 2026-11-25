@@ -71,7 +71,8 @@ input,textarea{font:inherit;font-size:14px;border:1px solid var(--line);border-r
 
 <script>
 const SLOTS=[
- {key:'aruaru',time:'08:00',label:'製造業あるある',img:true},
+ {key:'news',time:'08:00',label:'ニュース＋コメント',img:true},
+ {key:'aruaru',time:'予備',label:'製造業あるある（予備）',img:true,optional:true},
  {key:'affiliate',time:'12:00',label:'アフィリエイトPR',img:false},
  {key:'question',time:'15:00',label:'真面目な問いかけ',img:true}];
 const FLOW_IMG=[['picked','選択済み'],['ready','画像OK'],['scheduled','予約済み'],['posted','投稿済み']];
@@ -166,6 +167,7 @@ function render(){
     let ok=true;
     for(const s of SLOTS){
       const items=docs.filter(d=>d.date===date&&d.slot===s.key);
+      if(s.optional&&!items.some(i=>i.status&&i.status!=='candidate'))continue;
       if(!items.length){ok=false;continue}
       slots++;
       if(items.some(i=>i.status&&i.status!=='candidate'))picks++;else ok=false;
@@ -177,6 +179,7 @@ function render(){
     const box=h('div',{class:'day'},h('h2',{},dayLabel(date)));
     for(const s of SLOTS){
       const items=docs.filter(d=>d.date===date&&d.slot===s.key).sort((a,b)=>a.cid.localeCompare(b.cid,'ja',{numeric:true}));
+      if(s.optional&&!items.length)continue;
       box.append(slotView(date,s,items));
     }
     list.append(box);

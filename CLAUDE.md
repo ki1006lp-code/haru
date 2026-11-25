@@ -16,12 +16,15 @@
 - `queue/selected/YYYY-MM-DD.json` … 選択済み（文・画像パス）
 - `queue/images/` … 生成イラスト
 - `scripts/generate_image.py` … Geminiで画像生成（`GEMINI_API_KEY` 必須）
-- `scripts/build_select_page.py` … 選択ページ `out/select.html` を作る
+- `scripts/build_select_page.py` … 選択ページ `out/select.html` を作る（旧。今は Artifact のページを使う）
+- `scripts/fetch_news.py` … Google ニュースRSSから毎朝10記事を集める → `news/`
+- 環境 `haru-x-posts`: news.google.com / rss.itmedia.co.jp / newswitch.jp / 楽天3ホストを許可済み
 
 ## 投稿枠
 | 時刻 | キー | 内容 | 画像 |
 |---|---|---|---|
-| 08:00 | aruaru | 製造業あるある（共感・クスッと） | あり |
+| 08:00 | news | ニュース記事にコメント（メイン＋リプライ2：意見／元記事リンク） | あり |
+| 予備 | aruaru | 製造業あるある（共感・クスッと）。ニュースが弱い日や夕方用 | あり |
 | 12:00 | affiliate | 楽天アフィリエイト商品のPR | なし |
 | 15:00 | question | 真面目なトーンの問いかけ | あり |
 
@@ -36,11 +39,17 @@
 - バズ傾向は「真似」ではなく型（共感の切り口、文の長さ、書き出し）だけ参考にする
 
 ## 毎朝のルーティン（定期実行の手順）
-1. Web検索で、製造業・現場・季節もののバズ傾向を収集する（X上の話題、関連記事、季節イベント）
-2. ユーザーが貼った自分の投稿の数値（インプレッション、いいね等）があれば分析する
-3. 朝レポートを作る: 昨日の反応、伸びた型、今日以降に効きそうな切り口
-4. ストック確認: `queue/selected/` に今日から数えて3日分なければ、足りない日の候補を3枠×5案で作る
-5. 候補ができたら `python3 scripts/build_select_page.py` で選択ページを更新し、ユーザーに知らせる
+前提: 作業ブランチは `claude/x-post-automation-jwzmvs`。投稿は絶対に自動で出さない（X APIは使わない）。
+1. `python3 scripts/fetch_news.py --days 2` で、キーワード（製造、自動車、働き方、管理職、中小企業、AI、溶接、プロジェクション溶接、スポット溶接、プレス、ロボット）の記事を10件集める → `news/日付.md`
+2. 10件から、あなたの軸（仕組み化・属人化・電気制御・溶接/プレス/ロボット）に合う5件を選び、当日 `news` 枠（08:00）の候補N1〜N5を作る
+   - メイン: 記事の見出しの範囲で内容に触れ、一言の意見を添える（記事に書いていない事実を作らない・断定しない）
+   - リプライ1: 意見の続き（profile.md と episodes.md の事実だけを使う）
+   - リプライ2: `元記事：タイトル（媒体名）` ＋ URL
+   - 各ポスト全角140字以内。事件・訃報・誹謗は選ばない
+3. ArtifactData の `posts` を読み、選択・投稿済みの傾向と反応（imps/likes/rp/note）を `profile.md` と `analytics/log.md` に反映する
+4. ストック確認: 今日から3日分で、question・affiliate 枠が未選択のまま不足していれば、足りない日の候補を作る（各枠5案、メイン＋リプライ2）
+5. 候補は `queue/candidates/` に保存し、同時に ArtifactData の batch（status=candidate）で `posts` に追加する。既存の文書は上書きしない
+6. 朝レポートを返す: 昨日の反応、今日の10記事、作った候補、ユーザーにしてほしいこと（選ぶ・商品確認など）
 
 ## 投稿ストックのページ（Artifact）
 URL: https://claude.ai/artifact/XbVtetUTEhxY5rAvVSdXeS （ソース: `app/index.html`）

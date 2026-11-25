@@ -7,27 +7,42 @@
         {
           "id": "A1",
           "text": "「このデータ、誰が入力したの？」→誰も覚えていない。",
-          "image": true
+          "image": true,
+          "replies": [
+            "入力した人が分からないデータは、直す人も分からない。誰が・いつ・何を入れたかが残るだけで、現場の迷いはかなり減ると思う。"
+          ]
         },
         {
           "id": "A2",
           "text": "紙の実績表、最終的に一番信頼されているのは、端に書かれたメモ。",
-          "image": true
+          "image": true,
+          "replies": [
+            "端のメモにこそ、現場の本当の情報がある。それを捨てずに、仕組みに取り込めないか。いつもそこで悩む。"
+          ]
         },
         {
           "id": "A3",
           "text": "金型の交換時期、「そろそろだと思う」で運用されがち。",
-          "image": true
+          "image": true,
+          "replies": [
+            "「そろそろ」を数字にする。ショット数でも日数でもいい。数字になった瞬間、誰でも判断できるようになる。"
+          ]
         },
         {
           "id": "A4",
           "text": "集計を課ごとにまとめる作業。毎月この時期に「今年こそ自動化する」と誓う。",
-          "image": true
+          "image": true,
+          "replies": [
+            "実際に、生産実績から課ごとに集計するシステムを作っている。毎月の「今年こそ」を、今月で終わらせたい。"
+          ]
         },
         {
           "id": "A5",
           "text": "納品書と実際の数が合わない日は、だいたい別の理由で残業になる。",
-          "image": true
+          "image": true,
+          "replies": [
+            "数が合わない原因は、だいたい入力か転記。納品書のOCR取り込みは、そこを減らす狙いで作っている。"
+          ]
         }
       ]
     },
@@ -42,27 +57,102 @@
         {
           "id": "Q1",
           "text": "設備の不具合が「たまに起きる」とき、最初に何を記録しますか？時間、条件、それとも誰が操作したか？",
-          "image": true
+          "image": true,
+          "replies": [
+            "私は、まず「条件」を記録します。いつ、どの設備で、どんな状態の時か。再現条件が分かれば、半分は解決に近づく。",
+            "「たまに」を「この条件で起きる」に変える。そのための記録の仕組みを、現場の負担なく作れないかを考えています。"
+          ]
         },
         {
           "id": "Q2",
           "text": "設備トラブルの切り分けは、電気から疑う派ですか、メカから疑う派ですか？その理由も知りたいです。",
-          "image": true
+          "image": true,
+          "replies": [
+            "私は電気・制御が得意なので、つい電気側から見がちです。",
+            "ただ、決めつけると遠回りになる。まず「何が変わったか」を聞いて、そこから順に絞るのが近道だと思っています。"
+          ]
         },
         {
           "id": "Q3",
           "text": "金型や電極のメンテナンスを見える化するとき、まず何を管理すべきだと思いますか？",
-          "image": true
+          "image": true,
+          "replies": [
+            "私が最初に管理したいのは「使用回数」と「交換・手入れの履歴」です。感覚ではなく、数字で次の手入れを決められるようにしたい。",
+            "履歴が誰でも見られれば、休んだ日でも判断できる。メンテナンス管理システムを作っているのも、そのためです。"
+          ]
         },
         {
           "id": "Q4",
           "text": "新人に「記録の大切さ」を伝えるとき、どう説明していますか？",
-          "image": true
+          "image": true,
+          "replies": [
+            "私なら「あなたのためではなく、次に困る人のため」と伝えます。記録は、自分が休んだ日の自分を助けてくれる。",
+            "そして、書くのが面倒にならない形にすること。説明より、続けられる仕組みのほうが効くと思っています。"
+          ]
         },
         {
           "id": "Q5",
           "text": "現場で使うアプリを続けるために、「入力は3タップ以内」のような決めごとはありますか？",
-          "image": true
+          "image": true,
+          "replies": [
+            "私が大事にしたいのは「現場で手が止まらないこと」。入力が増えるほど、記録は続かなくなります。",
+            "だから、選ぶだけ・読み取るだけで済む形を優先したい。OCRで手書きを読み取る仕組みも、その考え方から作りました。"
+          ]
+        }
+      ]
+    },
+    "08:00_news": {
+      "label": "ニュース＋コメント",
+      "candidates": [
+        {
+          "id": "N1",
+          "text": "トヨタGRと安川が開発したAI溶接ロボが、工房に導入されたそうです。異常の検知から修正まで対応するとのこと。溶接を経験した立場から、素直に気になるニュースです。",
+          "replies": [
+            "気になるのは、AIが「なぜそう判断したか」を人が追えるか。理由が見えれば、現場は納得して使える。見えないと、結局は人が全部見直すことになる。",
+            "元記事：溶接の異常検知・修正まで対応 トヨタGRと安川が開発のAI溶接ロボを工房に導入：ニュース（中日BIZナビ）\nhttps://news.google.com/rss/articles/CBMiX0FVX3lxTE56djhPSUw0aXFTelItT3FaXzVsNFVfTWtLd18waDhKT3NKNGZSZHFFYTM4NWNQSWUzcWVxTlo2czFBTDEzcUxpU0JiYmdIdDFqZTBvS2VxYmFMWC0xUmx3?oc=5"
+          ],
+          "image": true,
+          "article": "https://news.google.com/rss/articles/CBMiX0FVX3lxTE56djhPSUw0aXFTelItT3FaXzVsNFVfTWtLd18waDhKT3NKNGZSZHFFYTM4NWNQSWUzcWVxTlo2czFBTDEzcUxpU0JiYmdIdDFqZTBvS2VxYmFMWC0xUmx3?oc=5"
+        },
+        {
+          "id": "N2",
+          "text": "「お手本5回で成功率95%」という見出しのロボットの話。多品種少量の中小製造業を変えるか、という記事です。数字の裏にある条件が気になります。",
+          "replies": [
+            "ロボットに教える手間は、新人に教える手間と似ている。手順が整理されている現場ほど、早く覚えさせられるはず。自動化の前に、まず手順を言葉にする作業が要ると思っています。",
+            "元記事：お手本5回で成功率95%…エヌビディア「GR00T 2」は多品種少量の中小製造業を変えるか（ビジネスジャーナル）\nhttps://news.google.com/rss/articles/CBMiW0FVX3lxTFBlQWtRaTdvbklubDJZWFU5MS1zT19QbHNnbTV4TG9YUThLSmxQd0pJN0ZQTjU3cFF2MWJXM0J0dkZZTTd0TmExdXliYzc1NnhtZTdZMG9uQlo1ZDQ?oc=5"
+          ],
+          "image": true,
+          "article": "https://news.google.com/rss/articles/CBMiW0FVX3lxTFBlQWtRaTdvbklubDJZWFU5MS1zT19QbHNnbTV4TG9YUThLSmxQd0pJN0ZQTjU3cFF2MWJXM0J0dkZZTTd0TmExdXliYzc1NnhtZTdZMG9uQlo1ZDQ?oc=5"
+        },
+        {
+          "id": "N3",
+          "text": "NECプラットフォームズの社長が、自社工場を「AI活用の実験場」と語る記事。自分の現場で試してから広げる、という順番は、とても大事だと思います。",
+          "replies": [
+            "現場の人が使ってみて、直して、また使う。この繰り返しができる環境のほうが、続く仕組みになる。外から持ち込んだだけのツールは、定着しにくいと感じます。",
+            "元記事：NECプラットフォームズ 新井社長「安全保障と車載が成長の柱 自社工場はAI活用の実験場」（ビジネスネットワーク）\nhttps://news.google.com/rss/articles/CBMiU0FVX3lxTFBjSzh3ZWNiMm1vak1nd3NOWlQ2cmVHakJ1bHRMbUJuS1dOejcwZlpwb0ppQkFlcmY0WThVdzJuRUozS1djaXBMUUt1emlVd19neXRV?oc=5"
+          ],
+          "image": true,
+          "article": "https://news.google.com/rss/articles/CBMiU0FVX3lxTFBjSzh3ZWNiMm1vak1nd3NOWlQ2cmVHakJ1bHRMbUJuS1dOejcwZlpwb0ppQkFlcmY0WThVdzJuRUozS1djaXBMUUt1emlVd19neXRV?oc=5"
+        },
+        {
+          "id": "N4",
+          "text": "小さい傷までチェックする、部品の品質点検ロボの紹介。目視検査は、人によって見え方が違う作業の代表だと思います。",
+          "replies": [
+            "検査の「基準」が人の頭の中にあると、属人化する。ロボットに置き換える前に、基準を写真や数字で残しておく。それだけでも、現場は楽になるはず。",
+            "元記事：部品の品質を点検する自動ロボットも登場 小さい傷もチェック 製造業の課題を解決をする技術を紹介（テレビ愛知）（Yahoo!ニュース）\nhttps://news.google.com/rss/articles/CBMif0FVX3lxTE95RS1JTUhjU2ZtTkN1TjE2VjFfajIwT280V205VFkteTk2ZHVIVXJyTnpIRFlhcXNkWWp5aVRQTFVBSzRUTElKdm91X05ac3JMQlBBYk1ZNzlpVThfbGNxZHBXOGVwbWMxZmVOM0pfeGcwejZsZnQ0cnJESEViY2c?oc=5"
+          ],
+          "image": true,
+          "article": "https://news.google.com/rss/articles/CBMif0FVX3lxTE95RS1JTUhjU2ZtTkN1TjE2VjFfajIwT280V205VFkteTk2ZHVIVXJyTnpIRFlhcXNkWWp5aVRQTFVBSzRUTElKdm91X05ac3JMQlBBYk1ZNzlpVThfbGNxZHBXOGVwbWMxZmVOM0pfeGcwejZsZnQ0cnJESEViY2c?oc=5"
+        },
+        {
+          "id": "N5",
+          "text": "従業員の7割が女性という製造業の働き方を学ぶ記事。「現場＝男性中心」という思い込みを疑うきっかけになりそうです。",
+          "replies": [
+            "誰が働いても回る現場にするには、作業を人の感覚ではなく、手順と仕組みにすること。属人化をほどくことは、働きやすさにもつながると思っています。",
+            "元記事：【中小企業のダイバーシティ推進・実践を学ぶ】製造業・従業員の7割が女性、バイアスを超える組織の変容ー小さな組織の働き方を学び合うコミュニティ・公開イベントの開催（Excite エキサイト）\nhttps://news.google.com/rss/articles/CBMidEFVX3lxTE50S2treGhCWG5reHVOTHpOYUNqNUF4Sk1OcXYtLVY2V0I2Qk1WTlNPYmt6LV83eWNWVFRzNHQyUGJtNWVxanJDal9yZEttT19tMTM0ZXJ2dkhNZXUxenptT0oyYl9sWlpLUEJDd0dZcF91MmJt?oc=5"
+          ],
+          "image": true,
+          "article": "https://news.google.com/rss/articles/CBMidEFVX3lxTE50S2treGhCWG5reHVOTHpOYUNqNUF4Sk1OcXYtLVY2V0I2Qk1WTlNPYmt6LV83eWNWVFRzNHQyUGJtNWVxanJDal9yZEttT19tMTM0ZXJ2dkhNZXUxenptT0oyYl9sWlpLUEJDd0dZcF91MmJt?oc=5"
         }
       ]
     }
