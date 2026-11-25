@@ -22,10 +22,10 @@ ROOT = Path(__file__).resolve().parent.parent
 MODEL = os.environ.get("GEMINI_IMAGE_MODEL", "gemini-2.5-flash-image")
 
 STYLE = (
-    "添付した参照画像のキャラクター（オレンジ色のふんわりした髪、にこやかな笑顔の青年、"
-    "青い作業着）と同一人物を主人公にしたイラストを描いてください。"
-    "フラットでやわらかい絵柄、細めの線、正方形の構図。製造業の現場が舞台。"
-    "画像の中に文字や数字は入れないこと。安全に関わる場面では保護具を着用させること。"
+    "添付した画像の人物を主人公にしたイラストを描いてください。"
+    "人物の特徴: オレンジ色のふんわりした髪、にこやかな笑顔、頬に淡いピンクの丸、白シャツに紺のネクタイ、青い作業着（胸に小さな名札、胸ポケットにペン）。"
+    "絵柄は添付画像と同じ、やわらかい水彩風、線は細め、正方形の構図。製造業の現場が舞台。"
+    "画像の中に文字や数字は入れないこと（名札は無地のまま）。安全に関わる場面では保護具を着用させること。"
 )
 
 
@@ -38,7 +38,7 @@ def generate(text: str, scene: str | None, out: Path) -> None:
     key = os.environ.get("GEMINI_API_KEY")
     if not key:
         sys.exit("GEMINI_API_KEY が設定されていません")
-    icon = base64.b64encode((ROOT / "assets" / "icon.png").read_bytes()).decode()
+    icon = base64.b64encode((ROOT / "assets" / "character_ref.png").read_bytes()).decode()
     payload = {
         "contents": [{
             "parts": [
