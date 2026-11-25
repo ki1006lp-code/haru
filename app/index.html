@@ -56,7 +56,6 @@ input,textarea{font:inherit;font-size:14px;border:1px solid var(--line);border-r
 <div id="app">
   <header>
     <h1>投稿ストック</h1>
-    <p class="sub">選ぶ → コピー → Xで開いて予約。投稿したら「投稿済み」にして、用済みは削除。</p>
   </header>
   <div id="sum" class="sum"></div>
   <div id="list"></div>
@@ -154,15 +153,10 @@ function slotView(day,slot,items){
     h('div',{class:'row'},
       h('button',{class:'pri',on:{click:()=>copy(text,'本文をコピーしました')}},'本文をコピー'),
       slot.img?h('a',{class:'btn',href:'https://chatgpt.com/?q='+encodeURIComponent(imagePrompt(base)),target:'_blank',rel:'noopener'},'ChatGPTで画像3案'):null,
-      slot.img?h('button',{on:{click:()=>copy(imagePrompt(base),'画像プロンプトをコピーしました')}},'プロンプトのみコピー'):null,
       h('a',{class:'btn',href:'https://x.com/intent/post?text='+encodeURIComponent(text),target:'_blank',rel:'noopener'},'Xで投稿画面を開く')),
-    slot.img?h('p',{class:'hint',style:'margin:0'},'ChatGPTが開いたら、アイコン画像を添付して送信します。3枚の中から選んで写真に保存し、Xの投稿画面で添付してください。'):null,
-    reps.length?h('p',{class:'hint',style:'margin:0'},'先にメイン投稿を出し、その投稿に返信する形で、リプライを順番に貼ってください。'):null,
-    h('div',{class:'steps'},flow.map(([k,l])=>h('button',{class:'step'+(k===picked.status?' cur':''),on:{click:()=>setStatus(picked,k)}},l)),
+    h('div',{class:'steps'},
+      posted?delBtn('削除','g-'+picked.date+slot.key,()=>delGroup(picked.date,slot.key)):h('button',{class:'step',on:{click:()=>setStatus(picked,'posted')}},'投稿済み'),
       h('button',{class:'step',on:{click:()=>setStatus(picked,'candidate')}},'選び直す'))];
-  if(posted){
-    children.push(h('div',{class:'row'},delBtn('用済みとして削除','g-'+picked.date+slot.key,()=>delGroup(picked.date,slot.key))));
-  }
   return h('section',{class:'slot'},children);
 }
 
