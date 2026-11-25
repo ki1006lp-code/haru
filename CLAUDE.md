@@ -46,7 +46,7 @@
    - リプライ1: 意見の続き（profile.md と episodes.md の事実だけを使う）
    - リプライ2: `元記事：タイトル（媒体名）` ＋ URL
    - 各ポスト全角140字以内。事件・訃報・誹謗は選ばない
-3. ArtifactData の `posts` を読み、選択・投稿済みの傾向と反応（imps/likes/rp/note）を `profile.md` と `analytics/log.md` に反映する
+3. ArtifactData の `posts` と `archive`（ページで「用済み削除」した投稿の退避先。同じ項目に archivedAt が付く）を読み、選択・投稿済みの傾向と反応（imps/likes/rp/note）を `profile.md` と `analytics/log.md` に反映する
 4. ストック確認: 今日から3日分で、question・affiliate 枠が未選択のまま不足していれば、足りない日の候補を作る（各枠5案、メイン＋リプライ2）
 5. 候補は `queue/candidates/` に保存し、同時に ArtifactData の batch（status=candidate）で `posts` に追加する。既存の文書は上書きしない
 6. 朝レポートを返す: 昨日の反応、今日の10記事、作った候補、ユーザーにしてほしいこと（選ぶ・商品確認など）

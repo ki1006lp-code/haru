@@ -115,6 +115,19 @@ async function savePerf(d,field,val){
   try{await ref(d).update({[field]:field==='note'?val:(Number.isFinite(n)?n:null)});toast('記録しました')}catch(e){toast('保存できませんでした')}
 }
 
+let armed=null,armT;
+function arm(key){armed=key;clearTimeout(armT);armT=setTimeout(()=>{armed=null;render()},4000);render()}
+function delBtn(label,key,fn){return h('button',{class:'step',on:{click:()=>{if(armed===key){armed=null;fn()}else arm(key)}}},armed===key?'もう一度押すと削除します':label)}
+async function delGroup(date,slot){
+  try{
+    for(const d of docs.filter(x=>x.date===date&&x.slot===slot)){
+      const {id,...rest}=d;
+      if(rest.status&&rest.status!=='candidate')await dbh.doc('archive/'+id).set({...rest,archivedAt:Date.now()});
+      await ref(d).delete();
+    }
+    toast('削除しました')
+  }catch(e){toast('削除できませんでした')}
+}
 async function saveUrl(d,url){try{await ref(d).update({url});toast('保存しました')}catch(e){toast('保存できませんでした')}}
 function slotView(day,slot,items){
   const picked=items.find(i=>i.status&&i.status!=='candidate');
@@ -150,7 +163,8 @@ function slotView(day,slot,items){
   if(posted){
     const f=(k,l)=>h('label',{},l,h('input',{type:'number',inputmode:'numeric',min:'0',id:'f-'+picked.id+'-'+k,value:picked[k]??'',on:{change:e=>savePerf(picked,k,e.target.value)}}));
     children.push(h('div',{class:'perf'},f('imps','表示'),f('likes','いいね'),f('rp','リポスト')),
-      h('label',{class:'hint'},'メモ（伸びた／外れた理由）',h('textarea',{rows:2,id:'n-'+picked.id,on:{change:e=>savePerf(picked,'note',e.target.value)}},picked.note||'')));
+      h('label',{class:'hint'},'メモ（伸びた／外れた理由）',h('textarea',{rows:2,id:'n-'+picked.id,on:{change:e=>savePerf(picked,'note',e.target.value)}},picked.note||'')),
+      h('div',{class:'row'},delBtn('用済みとして削除'+(picked.imps==null?'（反応は未記録）':''),'g-'+picked.date+slot.key,()=>delGroup(picked.date,slot.key))));
   }
   return h('section',{class:'slot'},children);
 }
@@ -175,6 +189,8 @@ function render(){
     if(ok)full++;
   }
   sum.append(h('span',{class:'pill'},'3枠そろった日 ',h('b',{},full),' 日分'),h('span',{class:'pill'},'選択済み ',h('b',{},picks),' / ',slots,' 枠'));
+  const used=[...new Set(docs.filter(d=>d.status==='posted').map(d=>d.date+'|'+d.slot))];
+  if(used.length)sum.append(delBtn('投稿済み '+used.length+'枠をまとめて削除','all',async()=>{for(const u of used){const [dd,ss]=u.split('|');await delGroup(dd,ss)}}));
   for(const date of dates){
     const box=h('div',{class:'day'},h('h2',{},dayLabel(date)));
     for(const s of SLOTS){
