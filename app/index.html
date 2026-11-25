@@ -95,7 +95,7 @@ async function copy(text,msg){
   catch(e){const ta=h('textarea',{readonly:'',rows:4});ta.value=text;document.body.append(ta);ta.select();toast('選択しました。コピーしてください');setTimeout(()=>ta.remove(),8000)}
 }
 function imagePrompt(text){
-  return '添付した画像の人物を主人公にしたイラストを描いてください。\n人物の特徴: オレンジ色のふんわりした髪、にこやかな笑顔、頬に淡いピンクの丸、白シャツに紺のネクタイ、青い作業着（胸に小さな名札、胸ポケットにペン）。\n- 絵柄は添付画像と同じ、やわらかい水彩風のイラスト。線は細め、正方形（1:1）\n- 舞台は製造業の現場（工作機械、生産計画のボードなど）\n- 画像の中に文字や数字は入れない（名札は無地のままでよい）\n- 安全に関わる場面では保護具（保護メガネ・ヘルメット）を着用させる\n\n場面: 次のX投稿の内容を、見た人が思わずクスッと・ハッとする1場面で表現してください。\n構図・ポーズ・背景を変えた3パターンを、別々の画像として3枚生成してください。\n「'+text+'」';
+  return '添付した画像の人物を主人公にした「4コマ漫画」を、縦長（2:3）の1枚の画像で描いてください。\n人物の特徴: オレンジ色のふんわりした髪、にこやかな笑顔、頬に淡いピンクの丸、白シャツに紺のネクタイ、青い作業着（胸に小さな名札、胸ポケットにペン）。\n- 縦に4コマを並べる。コマの間は白い余白で区切る\n- 4コマの流れ: 1コマ目=状況、2コマ目=展開、3コマ目=転換、4コマ目=オチ（クスッと笑える、またはハッとする）\n- 4コマすべてに同じ人物が登場し、顔・髪色・服装をそろえる\n- 絵柄は添付画像と同じ、やわらかい水彩風のイラスト。線は細め\n- 舞台は製造業の現場（工作機械、生産計画のボードなど）\n- 吹き出しや文字・数字は入れない（表情と絵で伝える。名札は無地のままでよい）\n- 安全に関わる場面では保護具（保護メガネ・ヘルメット）を着用させる\n\nネタ: 次のX投稿の内容を4コマにしてください。画像は1枚だけ生成してください。\n「'+text+'」';
 }
 function dayLabel(d){const [y,m,dd]=d.split('-').map(Number);const w='日月火水木金土'[new Date(y,m-1,dd).getDay()];return m+'/'+dd+'（'+w+'）'}
 const ref=d=>col.doc(d.id);
@@ -152,7 +152,7 @@ function slotView(day,slot,items){
       !base.includes('#PR')?h('p',{class:'hint'},'本文に「#PR」がありません。付けてから投稿してください。'):null):null,
     h('div',{class:'row'},
       h('button',{class:'pri',on:{click:()=>copy(text,'本文をコピーしました')}},'本文をコピー'),
-      slot.img?h('a',{class:'btn',href:'https://chatgpt.com/?q='+encodeURIComponent(imagePrompt(base)),target:'_blank',rel:'noopener',on:{click:()=>copy(imagePrompt(base),'プロンプトをコピーした。入ってなければ貼り付けてね')}},'ChatGPTで画像3案'):null,
+      slot.img?h('a',{class:'btn',href:'https://chatgpt.com/?q='+encodeURIComponent(imagePrompt(base)),target:'_blank',rel:'noopener',on:{click:()=>copy(imagePrompt(base),'プロンプトをコピーした。入ってなければ貼り付けてね')}},'ChatGPTで4コマ'):null,
       h('a',{class:'btn',href:'https://x.com/intent/post?text='+encodeURIComponent(text),target:'_blank',rel:'noopener'},'Xで投稿画面を開く')),
     h('div',{class:'steps'},
       posted?delBtn('削除','g-'+picked.date+slot.key,()=>delGroup(picked.date,slot.key)):h('button',{class:'step',on:{click:()=>setStatus(picked,'posted')}},'投稿済み'),
