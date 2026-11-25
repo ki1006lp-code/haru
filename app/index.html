@@ -127,6 +127,13 @@ async function delGroup(date,slot){
     toast('削除しました')
   }catch(e){toast('削除できませんでした')}
 }
+async function copyImage(){
+  try{
+    const b=await (await fetch('character_ref.png')).blob();
+    await navigator.clipboard.write([new ClipboardItem({'image/png':b})]);
+    toast('キャラ画像をコピーした。ChatGPTで貼り付けてね');
+  }catch(e){toast('コピーできなかった。横の画像を長押ししてコピーしてね')}
+}
 async function saveUrl(d,url){try{await ref(d).update({url});toast('保存しました')}catch(e){toast('保存できませんでした')}}
 function slotView(day,slot,items){
   const picked=items.find(i=>i.status&&i.status!=='candidate');
