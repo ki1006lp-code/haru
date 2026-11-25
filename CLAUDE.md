@@ -6,7 +6,6 @@
 ## 最初に必ず読むもの（毎回）
 - `config/profile.md`（本人の考え・好み・禁止事項）
 - `config/episodes.md`（実体験ネタ帳。未使用の項目を優先して使う）
-- `analytics/log.md`（反応ログ。伸びた型を参考にする）
 - `config/character.md`（キャラ設定と発信の柱）
 
 ## 構成
@@ -29,6 +28,7 @@
 | 15:00 | question | 真面目なトーンの問いかけ | あり |
 
 ## 文面ルール
+- **口調はラフ**: タメ口寄りの話し言葉（「〜かな」「〜だよね」「〜しがち」「正直」）。です・ます調は使わない。絵文字・顔文字は使わない。上から目線・説教くさい言い方・煽りは避ける。現場の仲間に話しかける感じ
 - 長めに伝える投稿は「メイン投稿＋リプライ1〜2個（スレッド）」にする。各ポストは全角140字以内。docの `replies`（文字列の配列）に入れる
 - アフィリエイト投稿: メインに「#PR」と体験・考え、リプライの最後にリンク（リンクはページが自動で付ける）。メイン投稿にURLは入れない
 - X Premiumなら1投稿で長文も可能。契約状況は未確認（確認できたら方針を見直す）
@@ -46,16 +46,16 @@
    - リプライ1: 意見の続き（profile.md と episodes.md の事実だけを使う）
    - リプライ2: `元記事：タイトル（媒体名）` ＋ URL
    - 各ポスト全角140字以内。事件・訃報・誹謗は選ばない
-3. ArtifactData の `posts` と `archive`（ページで「用済み削除」した投稿の退避先。同じ項目に archivedAt が付く）を読み、選択・投稿済みの傾向と反応（imps/likes/rp/note）を `profile.md` と `analytics/log.md` に反映する
+3. ArtifactData の `posts` と `archive`（ページで「用済み削除」した投稿の退避先）を読み、どの案が選ばれたか（選んだ/選ばなかった傾向）を `profile.md` の「選択の傾向ログ」に反映する。反応（表示・いいね等）の記録は不要
 4. ストック確認: 今日から3日分で、question・affiliate 枠が未選択のまま不足していれば、足りない日の候補を作る（各枠5案、メイン＋リプライ2）
 5. 候補は `queue/candidates/` に保存し、同時に ArtifactData の batch（status=candidate）で `posts` に追加する。既存の文書は上書きしない
-6. 朝レポートを返す: 昨日の反応、今日の10記事、作った候補、ユーザーにしてほしいこと（選ぶ・商品確認など）
+6. 朝レポートを返す: 昨日選ばれた案の傾向、今日の10記事、作った候補、ユーザーにしてほしいこと（選ぶ・商品確認など）
 
 ## 投稿ストックのページ（Artifact）
 URL: https://claude.ai/artifact/XbVtetUTEhxY5rAvVSdXeS （ソース: `app/index.html`）
-- ユーザーはここで案を選び、コピーし、Xの投稿画面を開き、投稿後に反応（表示・いいね・RP・メモ）を記録する
+- ユーザーはここで案を選び、コピーし、Xの投稿画面を開き、投稿したら「投稿済み」にして、用済みを削除する（反応の記録はしない）
 - データはArtifactのdb（コレクション `posts`、doc id は `日付_スロット_案ID`）。項目: date, slot(aruaru/affiliate/question), cid, text, status(candidate/picked/ready/scheduled/posted), imps, likes, rp, note
-- 毎朝: ArtifactData の query で `posts` を読み、status が picked 以降の傾向と posted の反応を `profile.md` と `analytics/log.md` に反映する
+- 毎朝: ArtifactData の query で `posts` と `archive` を読み、status が picked 以降の傾向を `profile.md` に反映する
 - 新しい案は `queue/candidates/` に保存すると同時に、ArtifactData の batch で `posts` に status=candidate で追加する
 
 ## 学習の更新（会話のたびに）

@@ -56,7 +56,7 @@ input,textarea{font:inherit;font-size:14px;border:1px solid var(--line);border-r
 <div id="app">
   <header>
     <h1>投稿ストック</h1>
-    <p class="sub">選ぶ → コピー → Xで開いて予約。投稿後は反応を記録します。</p>
+    <p class="sub">選ぶ → コピー → Xで開いて予約。投稿したら「投稿済み」にして、用済みは削除。</p>
   </header>
   <div id="sum" class="sum"></div>
   <div id="list"></div>
@@ -161,10 +161,7 @@ function slotView(day,slot,items){
     h('div',{class:'steps'},flow.map(([k,l])=>h('button',{class:'step'+(k===picked.status?' cur':''),on:{click:()=>setStatus(picked,k)}},l)),
       h('button',{class:'step',on:{click:()=>setStatus(picked,'candidate')}},'選び直す'))];
   if(posted){
-    const f=(k,l)=>h('label',{},l,h('input',{type:'number',inputmode:'numeric',min:'0',id:'f-'+picked.id+'-'+k,value:picked[k]??'',on:{change:e=>savePerf(picked,k,e.target.value)}}));
-    children.push(h('div',{class:'perf'},f('imps','表示'),f('likes','いいね'),f('rp','リポスト')),
-      h('label',{class:'hint'},'メモ（伸びた／外れた理由）',h('textarea',{rows:2,id:'n-'+picked.id,on:{change:e=>savePerf(picked,'note',e.target.value)}},picked.note||'')),
-      h('div',{class:'row'},delBtn('用済みとして削除'+(picked.imps==null?'（反応は未記録）':''),'g-'+picked.date+slot.key,()=>delGroup(picked.date,slot.key))));
+    children.push(h('div',{class:'row'},delBtn('用済みとして削除','g-'+picked.date+slot.key,()=>delGroup(picked.date,slot.key))));
   }
   return h('section',{class:'slot'},children);
 }
