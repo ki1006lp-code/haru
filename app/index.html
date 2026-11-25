@@ -160,6 +160,8 @@ function slotView(day,slot,items){
     h('div',{class:'row'},
       h('button',{class:'pri',on:{click:()=>copy(text,'本文をコピーしました')}},'本文をコピー'),
       slot.img?h('a',{class:'btn',href:'https://chatgpt.com/?q='+encodeURIComponent(imagePrompt(base)),target:'_blank',rel:'noopener',on:{click:()=>copy(imagePrompt(base),'プロンプトをコピーした。入ってなければ貼り付けてね')}},'ChatGPTで4コマ'):null,
+      slot.img?h('button',{on:{click:copyImage}},'キャラ画像をコピー'):null,
+      slot.img?h('img',{src:'character_ref.png',alt:'キャラ画像（長押しでコピー）',style:'width:40px;height:40px;border-radius:50%;align-self:center'}):null,
       h('a',{class:'btn',href:'https://x.com/intent/post?text='+encodeURIComponent(text),target:'_blank',rel:'noopener'},'Xで投稿画面を開く')),
     h('div',{class:'steps'},
       posted?delBtn('削除','g-'+picked.date+slot.key,()=>delGroup(picked.date,slot.key)):h('button',{class:'step',on:{click:()=>setStatus(picked,'posted')}},'投稿済み'),
